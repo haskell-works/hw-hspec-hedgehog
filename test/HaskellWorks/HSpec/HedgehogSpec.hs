@@ -1,8 +1,8 @@
 {-# LANGUAGE OverloadedStrings #-}
 
-module HaskellWorks.HUnit.HedgehogSpec (spec) where
+module HaskellWorks.HSpec.HedgehogSpec (spec) where
 
-import           HaskellWorks.HUnit.Hedgehog
+import           HaskellWorks.HSpec.Hedgehog
 import           Hedgehog
 import           Test.Hspec
 

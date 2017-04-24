@@ -1,7 +1,7 @@
 {-# LANGUAGE FlexibleContexts  #-}
 {-# LANGUAGE OverloadedStrings #-}
 
-module HaskellWorks.HUnit.Hedgehog where
+module HaskellWorks.HSpec.Hedgehog where
 
 import           Hedgehog
 
