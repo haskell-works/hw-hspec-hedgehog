@@ -11,4 +11,4 @@ import           Test.Hspec
 spec :: Spec
 spec = describe "HaskellWorks.HUnit.HedgehogSpec" $ do
   it "should have require function that checks hedgehog properties" $ do
-    require $ property $ 42 === 41
+    require $ property $ 42 === 42
