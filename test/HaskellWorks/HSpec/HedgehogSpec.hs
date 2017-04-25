@@ -9,6 +9,6 @@ import           Test.Hspec
 {-# ANN module ("HLint: ignore Redundant do"  :: String) #-}
 
 spec :: Spec
-spec = describe "HaskellWorks.HUnit.HedgehogSpec" $ do
+spec = describe "HaskellWorks.HSpec.HedgehogSpec" $ do
   it "should have require function that checks hedgehog properties" $ do
     require $ property $ 42 === 42
