@@ -15,7 +15,7 @@ cabal-version:        >=1.10
 
 library
   hs-source-dirs:       src
-  exposed-modules:      HaskellWorks.HSpec.Hedgehog
+  exposed-modules:      HaskellWorks.Hspec.Hedgehog
   build-depends:        base >= 4.7 && < 5
                       , call-stack
                       , hedgehog
@@ -27,7 +27,7 @@ test-suite hw-hspec-hedgehog-test
   type:                 exitcode-stdio-1.0
   hs-source-dirs:       test
   main-is:              Spec.hs
-  other-modules:        HaskellWorks.HSpec.HedgehogSpec
+  other-modules:        HaskellWorks.Hspec.HedgehogSpec
   build-depends:        base
                       , hedgehog
                       , hspec
