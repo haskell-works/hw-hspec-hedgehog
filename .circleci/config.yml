@@ -1,0 +1,51 @@
+version: 2.0
+jobs:
+  build:
+    working_directory: ~/hw-hspec-hedgehog
+    docker:
+      - image: fpco/stack-build:latest
+
+    environment:
+      LD_LIBRARY_PATH: /usr/local/lib
+
+    steps:
+      - checkout
+      - run: git fetch --unshallow || true
+      - run: grep '^resolver:' stack.yaml > resolver.txt
+
+      - restore_cache:
+          keys:
+            - dot-stack-{{ checksum "stack.yaml" }}-{{ checksum "hw-hspec-hedgehog.cabal" }}
+            - dot-stack-{{ checksum "stack.yaml" }}
+            - dot-stack-{{ checksum "resolver.txt" }}
+            - dot-stack-resolver-{{ checksum "resolver.txt" }}
+      - run: stack setup
+      - save_cache:
+          key: dot-stack-resolver-{{ checksum "resolver.txt" }}
+          paths:
+            - ~/.stack
+      - save_cache:
+          key: dot-stack-setup-{{ checksum "stack.yaml" }}
+          paths:
+            - ~/.stack
+
+      - restore_cache:
+          key: stack-work-{{ checksum "stack.yaml" }}
+      - run: stack build --test --no-run-tests --dependencies-only
+      - save_cache:
+          key: dot-stack-{{ checksum "resolver.txt" }}
+          paths:
+            - ~/.stack
+
+      - run: stack build --test --no-run-tests
+      - save_cache:
+          key: dot-stack-{{ checksum "stack.yaml" }}-{{ checksum "hw-hspec-hedgehog.cabal" }}
+          paths:
+            - ~/.stack
+      - save_cache:
+          key: stack-work-{{ checksum "stack.yaml" }}
+          paths: ~/hw-hspec-hedgehog/.stack-work
+
+      - run:
+          name: Running unit tests
+          command: stack test

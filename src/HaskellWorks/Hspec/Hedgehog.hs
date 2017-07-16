@@ -21,9 +21,9 @@ location = case reverse callStack of
 
 require :: HasCallStack => Property -> Assertion
 require p = do
-  result <- liftIO $ check $ p
-  unless result $ do
-    (E.throwIO (HUnitFailure location $ Reason "Hedgehog property test failed"))
+  result <- liftIO $ check p
+  unless result $
+    E.throwIO (HUnitFailure location $ Reason "Hedgehog property test failed")
 
-requireProperty :: Test IO () -> Assertion
+requireProperty :: PropertyT IO () -> Assertion
 requireProperty = require . property
