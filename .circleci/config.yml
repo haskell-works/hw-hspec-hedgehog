@@ -100,3 +100,20 @@ jobs:
                 publish
               fi
             fi
+
+workflows:
+  version: 2
+  un-tagged-build:
+    jobs:
+      - build:
+          filters:
+            tags:
+              ignore: /^v.*/
+  tagged-build:
+    jobs:
+      - build:
+          filters:
+            branches:
+              ignore: /.*/
+            tags:
+              only: /^v.*/
