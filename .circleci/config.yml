@@ -1,7 +1,7 @@
 version: 2.0
 jobs:
   build:
-    working_directory: ~/hw-hspec-hedgehog
+    working_directory: ~/project
     docker:
       - image: quay.io/haskell_works/stack-build-cabal:2018-01-29
 
@@ -38,6 +38,13 @@ jobs:
           paths:
             - ~/.cabal
 
+      ##### Building library
+      - restore_cache:
+          keys:
+            - dot-stack-{{ checksum "stack.yaml" }}-{{ checksum "package.yaml" }}
+            - dot-stack-{{ checksum "stack.yaml" }}-build
+            - dot-stack-{{ checksum "stack.yaml" }}-setup
+
       ##### Fetching latest organisation package versions
       - run:
           name: Fetching latest organisation package versions
@@ -45,13 +52,6 @@ jobs:
             fetch
             echo "== stack-ci.yaml =="
             cat stack-ci.yaml
-
-      ##### Building library
-      - restore_cache:
-          keys:
-            - dot-stack-{{ checksum "stack.yaml" }}-{{ checksum "package.yaml" }}
-            - dot-stack-{{ checksum "stack.yaml" }}-build
-            - dot-stack-{{ checksum "stack.yaml" }}-setup
 
       - restore_cache:
           key: dot-stack-work-{{ checksum "stack.yaml" }}
@@ -84,7 +84,7 @@ jobs:
 
       - save_cache:
           key: dot-stack-work-{{ checksum "stack.yaml" }}
-          paths: ~/hw-hspec-hedgehog/.stack-work
+          paths: ~/project/.stack-work
 
       ##### Running tests
       - run:

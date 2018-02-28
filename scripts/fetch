@@ -1,13 +1,15 @@
 #!/usr/bin/env bash
 
+stack query
+
 cabal update
 
 mkdir -p deps
 
-_project="$(echo *.cabal | cut -d '.' -f 1)"
+_project="$(cat package.yaml | grep '^name:' | head -n 1 | cut -d : -f 2 | xargs)"
 
 direct_deps() {
-  cat *.cabal | grep ', hw-' | cut -d , -f 2 | cut -d ' ' -f 2 | sort | uniq | grep -v "$_project"
+  cat ../package.yaml | grep '# \+ci-build-from-hackage' | cut -d '#' -f 1 | sed 's|^ *-||g' | xargs
 }
 
 pushd deps > /dev/null
@@ -20,10 +22,23 @@ projects() {
   done
 }
 
-grep '^extra-deps:$' -B 1000 ../stack.yaml > stack-a.yaml
 projects | sort | uniq | sed 's|^|  - |g' > stack-b.yaml
-grep '^extra-deps:$' -A 1000 ../stack.yaml | grep -v '^extra-deps:$' > stack-c.yaml
 
-cat stack-a.yaml stack-b.yaml stack-c.yaml > ../stack-ci.yaml
+if grep '^extra-deps:$' ../stack.yaml; then
+  grep '^extra-deps:$' -B 1000 ../stack.yaml | grep -v '^extra-deps:$' > stack-a.yaml
+  grep '^extra-deps:$' -A 1000 ../stack.yaml | grep -v '^extra-deps:$' > stack-c.yaml
+elif grep '^extra-deps: \[\]$' ../stack.yaml; then
+  grep '^extra-deps: \[\]$' -B 1000 ../stack.yaml | grep -v '^extra-deps: \[\]$' > stack-a.yaml
+  grep '^extra-deps: \[\]$' -A 1000 ../stack.yaml | grep -v '^extra-deps: \[\]$' > stack-c.yaml
+else
+  cp ../stack.yaml stack-a.yaml
+  echo > stack-c.yaml
+fi
+
+if [ -s stack-b.yaml ]; then
+  cat stack-a.yaml <(echo; echo 'extra-deps:') stack-b.yaml stack-c.yaml > ../stack-ci.yaml
+else
+  cat stack-a.yaml <(echo; echo 'extra-deps: []') stack-c.yaml > ../stack-ci.yaml
+fi
 
 popd > /dev/null
