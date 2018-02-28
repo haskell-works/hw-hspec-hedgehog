@@ -1,5 +1,5 @@
 name: hw-hspec-hedgehog
-version: '0.1.0.1'
+version: '0.1.0.2'
 synopsis: Interoperability between hspec and hedgehog
 description: Some functions to use hedgehog from hspec
 category: Web
