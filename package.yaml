@@ -7,7 +7,7 @@ author: John Ky
 maintainer: newhoggy@gmail.com
 copyright: 2017 John Ky
 license: BSD3
-github: githubuser/hw-hspec-hedgehog
+github: haskell-works/hw-hspec-hedgehog
 extra-source-files:
 - README.md
 dependencies:
