@@ -6,13 +6,13 @@ module HaskellWorks.Hspec.Hedgehog
   , requireProperty
   ) where
 
-import           Hedgehog
+import Control.Monad          (unless)
+import Control.Monad.IO.Class
+import Data.CallStack
+import Hedgehog
+import Test.HUnit.Lang
 
-import qualified Control.Exception      as E
-import           Control.Monad          (unless)
-import           Control.Monad.IO.Class
-import           Data.CallStack
-import           Test.HUnit.Lang
+import qualified Control.Exception as E
 
 location :: HasCallStack => Maybe SrcLoc
 location = case reverse callStack of
@@ -27,3 +27,6 @@ require p = do
 
 requireProperty :: PropertyT IO () -> Assertion
 requireProperty = require . property
+
+requireTest :: PropertyT IO () -> Assertion
+requireTest = require . withTests 1 . property
