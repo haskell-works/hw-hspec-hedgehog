@@ -4,6 +4,7 @@
 module HaskellWorks.Hspec.Hedgehog
   ( require
   , requireProperty
+  , requireTest
   ) where
 
 import Control.Monad          (unless)
