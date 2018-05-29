@@ -11,8 +11,8 @@ github: haskell-works/hw-hspec-hedgehog
 extra-source-files:
 - README.md
 dependencies:
-- hedgehog
-- hspec
+- hedgehog >= 0.5 && <0.7
+- hspec >= 2.4 && < 2.6
 
 library:
   source-dirs: src
@@ -20,8 +20,9 @@ library:
   - HaskellWorks.Hspec.Hedgehog
   dependencies:
   - base >=4.7 && <5
-  - call-stack
-  - HUnit
+  - call-stack >= 0.1 && < 0.2
+  - HUnit >= 1.5 && < 1.7
+  - transformers >= 0.4 && < 0.6
 
 tests:
   hw-hspec-hedgehog-test:
