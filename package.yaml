@@ -1,7 +1,7 @@
 name: hw-hspec-hedgehog
 version: '0.1.0.4'
 synopsis: Interoperability between hspec and hedgehog
-description: Some functions to use hedgehog from hspec
+description: Interoperability between hspec and hedgehog.
 category: Web
 author: John Ky
 maintainer: newhoggy@gmail.com
