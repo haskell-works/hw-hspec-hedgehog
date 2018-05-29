@@ -8,6 +8,10 @@ jobs:
     steps:
       - checkout
 
+      - run:
+          name: Remove Cabal file
+          command: rm *.cabal
+
       ##### Copying scripts
       - run:
           name: Copying scripts
