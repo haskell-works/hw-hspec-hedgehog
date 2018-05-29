@@ -2,7 +2,7 @@
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: 487eda6773b0fc083feb56bbfe53c436d510ab0b4f703abacee16a37857f7eed
+-- hash: 204f0806fe3f171c4b704f11adbb38ab0c387412da7606c92228872fddb87cae
 
 name:           hw-hspec-hedgehog
 version:        0.1.0.4
@@ -58,3 +58,4 @@ test-suite hw-hspec-hedgehog-test
     , hspec >=2.4 && <2.6
     , hw-hspec-hedgehog
   default-language: Haskell2010
+  build-tool-depends: hspec-discover:hspec-discover

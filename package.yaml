@@ -36,3 +36,5 @@ tests:
     dependencies:
     - base
     - hw-hspec-hedgehog
+    verbatim:
+      build-tool-depends: hspec-discover:hspec-discover
