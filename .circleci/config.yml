@@ -120,3 +120,17 @@ workflows:
           filters:
             branches:
               only: master
+  un-tagged-build:
+    jobs:
+      - build:
+          filters:
+            tags:
+              ignore: /^v.*/
+  tagged-build:
+    jobs:
+      - build:
+          filters:
+            branches:
+              ignore: /.*/
+            tags:
+              only: /^v.*/
