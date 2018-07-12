@@ -90,6 +90,14 @@ jobs:
       - image: quay.io/haskell_works/stack-build-cabal:2018-01-29
 
     steps:
+      - checkout
+
+      - run:
+          name: Copying scripts
+          command: |
+            mkdir -p ~/.local/bin
+            cp ./scripts/* ~/.local/bin
+
       - deploy:
           command: |
             if [ "$CIRCLE_PROJECT_USERNAME" == "haskell-works" ]; then
