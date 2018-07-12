@@ -1,123 +1,122 @@
+defaults: &defaults
+  working_directory: ~/build
+  docker:
+    - image: quay.io/haskell_works/stack-build-cabal:2018-01-29
+
+  steps:
+    - checkout
+
+    - run:
+        name: Remove Cabal file
+        command: rm *.cabal
+
+    - run:
+        name: Copying scripts
+        command: |
+          mkdir -p ~/.local/bin
+          cp ./scripts/* ~/.local/bin
+
+    - run:
+        name: Query resolver & ghc version
+        command: |
+          resolver "$(resolver $LTS)" > resolver.version
+          ghc-version $(cat resolver.version) >  ghc.version
+
+    - run:
+        name: Find all sub-projects
+        command: projects-summary > projects.summary
+
+    ##### Building library
+    - restore_cache:
+        keys:
+          - stack--{{ checksum "ghc.version" }}--{{ .Environment.CACHE_VERSION }}--{{ checksum "resolver.version" }}--{{ checksum "projects.summary" }}--{{ checksum "package.yaml" }}--{{ checksum "stack.yaml" }}
+          - stack--{{ checksum "ghc.version" }}--{{ .Environment.CACHE_VERSION }}--{{ checksum "resolver.version" }}--{{ checksum "projects.summary" }}--{{ checksum "package.yaml" }}
+          - stack--{{ checksum "ghc.version" }}--{{ .Environment.CACHE_VERSION }}--{{ checksum "resolver.version" }}--{{ checksum "projects.summary" }}--
+          - stack--{{ checksum "ghc.version" }}--X
+
+    - run:
+        name: Stack setup
+        command: stack setup --resolver ${LTS}
+
+    - save_cache:
+        key:    stack--{{ checksum "ghc.version" }}--X
+        paths:  [~/.stack, ~/project/.stack-work]
+
+    - run:
+        name: Building dependencies
+        command: |
+          stack build --resolver ${LTS} --dependencies-only
+          stack build --resolver ${LTS} --dependencies-only --test --no-run-tests
+
+    - save_cache:
+        key:    stack--{{ checksum "ghc.version" }}--{{ .Environment.CACHE_VERSION }}--{{ checksum "resolver.version" }}--{{ checksum "projects.summary" }}--{{ checksum "package.yaml" }}
+        paths:  [~/.stack, ~/project/.stack-work]
+
+    - run: stack build --resolver ${LTS} --test --no-run-tests
+
+    - save_cache:
+        key:    stack--{{ checksum "ghc.version" }}--{{ .Environment.CACHE_VERSION }}--{{ checksum "resolver.version" }}--{{ checksum "projects.summary" }}--{{ checksum "package.yaml" }}--{{ checksum "stack.yaml" }}
+        paths:  [~/.stack, ~/project/.stack-work]
+
+    ##### Running tests
+    - run:
+        name: Running tests against latest on hackage
+        command: stack test --resolver ${LTS}
+
 version: 2.0
 jobs:
-  build:
-    working_directory: ~/project
-    docker:
-      - image: quay.io/haskell_works/stack-build-cabal:2018-01-29
+  lts-10:
+    environment:
+      - LTS: "lts-10"
+    <<: *defaults
 
-    steps:
-      - checkout
+  lts-11:
+    environment:
+      - LTS: "lts-11"
+    <<: *defaults
 
-      - run:
-          name: Remove Cabal file
-          command: rm *.cabal
+  lts-12:
+    environment:
+      - LTS: "lts-12"
+    <<: *defaults
 
-      ##### Copying scripts
-      - run:
-          name: Copying scripts
-          command: |
-            mkdir -p ~/.local/bin
-            cp ./scripts/* ~/.local/bin
+  nightly:
+    environment:
+      - LTS: "nightly"
+    <<: *defaults
 
-      ##### Updating cabval package list
-      - run:
-          name: Updating cabal package list date stamp
-          command: date +%F > dot-cabal-cache-date
-
-      - restore_cache:
-          keys:
-            - dot-cabal-{{ checksum "dot-cabal-cache-date" }}
-            - dot-cabal
-
-      - run:
-          name: Updating cabal package list
-          command: cabal update
-
-      - save_cache:
-          key: dot-cabal-{{ checksum "dot-cabal-cache-date" }}
-          paths:
-            - ~/.cabal
-      - save_cache:
-          key: dot-cabal
-          paths:
-            - ~/.cabal
-
-      ##### Building library
-      - restore_cache:
-          keys:
-            - dot-stack-{{ checksum "stack.yaml" }}-{{ checksum "package.yaml" }}
-            - dot-stack-{{ checksum "stack.yaml" }}-build
-            - dot-stack-{{ checksum "stack.yaml" }}-setup
-
-      ##### Fetching latest organisation package versions
-      - run:
-          name: Fetching latest organisation package versions
-          command: |
-            fetch
-            echo "== stack-ci.yaml =="
-            cat stack-ci.yaml
-
-      - restore_cache:
-          key: dot-stack-work-{{ checksum "stack.yaml" }}
-
-      - run:
-          name: Stack setup
-          command: stack setup
-
-      - save_cache:
-          key: dot-stack-{{ checksum "stack.yaml" }}-setup
-          paths:
-            - ~/.stack
-
-      - run:
-          name: Building dependencies
-          command: stack --stack-yaml stack-ci.yaml build --only-dependencies
-
-      - run:
-          name: Compiling
-          command: stack --stack-yaml stack-ci.yaml build --test --no-run-tests
-
-      - save_cache:
-          key: dot-stack-{{ checksum "stack.yaml" }}-{{ checksum "package.yaml" }}
-          paths:
-            - ~/.stack
-      - save_cache:
-          key: dot-stack-{{ checksum "stack.yaml" }}-build
-          paths:
-            - ~/.stack
-
-      - save_cache:
-          key: dot-stack-work-{{ checksum "stack.yaml" }}
-          paths: ~/project/.stack-work
-
-      ##### Running tests
-      - run:
-          name: Running tests against latest on hackage
-          command: stack --stack-yaml stack-ci.yaml test
-
-      - deploy:
-          command: |
-            if [ "$CIRCLE_PROJECT_USERNAME" == "haskell-works" ]; then
-              if [[ "$CIRCLE_BRANCH" == master ]]; then
-                when tag autotag
-              elif [[ "$CIRCLE_TAG" =~ v.* ]]; then
-                publish
-              fi
-            fi
+  release:
+    - deploy:
+        command: |
+          echo "Hello"
+          # if [ "$CIRCLE_PROJECT_USERNAME" == "haskell-works" ]; then
+          #   if [[ "$CIRCLE_BRANCH" == master ]]; then
+          #     when tag autotag
+          #   elif [[ "$CIRCLE_TAG" =~ v.* ]]; then
+          #     publish
+          #   fi
+          # fi
 
 workflows:
   version: 2
-  un-tagged-build:
+  multiple-ghcs:
     jobs:
-      - build:
-          filters:
-            tags:
-              ignore: /^v.*/
-  tagged-build:
-    jobs:
-      - build:
+      - lts-10
+      - lts-12
+      - lts-11:
+          requires:
+            - lts-10
+            - lts-12
+      - nightly:
+          requires:
+            - lts-10
+            - lts-12
+      - release:
+          requires:
+            - lts-12
+            - lts-11
+            - lts-10
+            - nightly
           filters:
             branches:
-              ignore: /.*/
-            tags:
-              only: /^v.*/
+              only: master
