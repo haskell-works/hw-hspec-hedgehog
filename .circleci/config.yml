@@ -1,5 +1,5 @@
 defaults: &defaults
-  working_directory: ~/build
+  working_directory: ~/project
   docker:
     - image: quay.io/haskell_works/stack-build-cabal:2018-01-29
 
@@ -29,17 +29,17 @@ defaults: &defaults
     ##### Building library
     - restore_cache:
         keys:
-          - stack--{{ checksum "ghc.version" }}--{{ .Environment.CACHE_VERSION }}--{{ checksum "resolver.version" }}--{{ checksum "projects.summary" }}--{{ checksum "package.yaml" }}--{{ checksum "stack.yaml" }}
-          - stack--{{ checksum "ghc.version" }}--{{ .Environment.CACHE_VERSION }}--{{ checksum "resolver.version" }}--{{ checksum "projects.summary" }}--{{ checksum "package.yaml" }}
-          - stack--{{ checksum "ghc.version" }}--{{ .Environment.CACHE_VERSION }}--{{ checksum "resolver.version" }}--{{ checksum "projects.summary" }}--
-          - stack--{{ checksum "ghc.version" }}--X
+          - stack--nAz6PsL--{{ checksum "ghc.version" }}--{{ .Environment.CACHE_VERSION }}--{{ checksum "projects.summary" }}--{{ checksum "package.yaml" }}--{{ checksum "stack.yaml" }}
+          - stack--nAz6PsL--{{ checksum "ghc.version" }}--{{ .Environment.CACHE_VERSION }}--{{ checksum "projects.summary" }}--{{ checksum "package.yaml" }}
+          - stack--nAz6PsL--{{ checksum "ghc.version" }}--{{ .Environment.CACHE_VERSION }}--{{ checksum "projects.summary" }}--
+          - stack--nAz6PsL--{{ checksum "ghc.version" }}--{{ .Environment.CACHE_VERSION }}--X
 
     - run:
         name: Stack setup
         command: stack setup --resolver ${LTS}
 
     - save_cache:
-        key:    stack--{{ checksum "ghc.version" }}--X
+        key:    stack--nAz6PsL--{{ checksum "ghc.version" }}--X
         paths:  [~/.stack, ~/project/.stack-work]
 
     - run:
@@ -49,13 +49,13 @@ defaults: &defaults
           stack build --resolver ${LTS} --dependencies-only --test --no-run-tests
 
     - save_cache:
-        key:    stack--{{ checksum "ghc.version" }}--{{ .Environment.CACHE_VERSION }}--{{ checksum "resolver.version" }}--{{ checksum "projects.summary" }}--{{ checksum "package.yaml" }}
+        key:    stack--nAz6PsL--{{ checksum "ghc.version" }}--{{ .Environment.CACHE_VERSION }}--{{ checksum "projects.summary" }}--{{ checksum "package.yaml" }}
         paths:  [~/.stack, ~/project/.stack-work]
 
     - run: stack build --resolver ${LTS} --test --no-run-tests
 
     - save_cache:
-        key:    stack--{{ checksum "ghc.version" }}--{{ .Environment.CACHE_VERSION }}--{{ checksum "resolver.version" }}--{{ checksum "projects.summary" }}--{{ checksum "package.yaml" }}--{{ checksum "stack.yaml" }}
+        key:    stack--nAz6PsL--{{ checksum "ghc.version" }}--{{ .Environment.CACHE_VERSION }}--{{ checksum "projects.summary" }}--{{ checksum "package.yaml" }}--{{ checksum "stack.yaml" }}
         paths:  [~/.stack, ~/project/.stack-work]
 
     ##### Running tests
@@ -63,26 +63,86 @@ defaults: &defaults
         name: Running tests against latest on hackage
         command: stack test --resolver ${LTS}
 
+cabalbuild: &cabalbuild
+  working_directory: ~/project
+
+  steps:
+    - checkout
+
+    - run:
+        name: Add GHC tools to PATH
+        command: |
+          echo "HOME=$HOME"
+          echo "BASH_ENV=$BASH_ENV"
+          echo "PATH=$PATH"
+          echo 'export PATH="$PATH:/opt/ghc/bin/"' >> $BASH_ENV
+
+    - run:
+        name: Copying scripts
+        command: |
+          mkdir -p ~/.local/bin
+          cp ./scripts/* ~/.local/bin
+
+    - run:
+        name: GHC version
+        command: |
+          echo "$GHC" > ghc.version
+
+    - run:
+        name: Find all sub-projects
+        command: ./scripts/projects-summary > projects.summary
+
+    ##### Building library
+    - restore_cache:
+        keys:
+          - cabal--{{ checksum "ghc.version" }}--{{ .Environment.CACHE_VERSION }}--{{ checksum "projects.summary" }}--extra
+          - cabal--{{ checksum "ghc.version" }}--{{ .Environment.CACHE_VERSION }}--{{ checksum "projects.summary" }}--
+
+    - run:
+        name: Building build dependencies
+        command: |
+          ./scripts/mk-cabal-project > cabal.project
+          cabal update
+          cabal new-build --disable-tests --disable-benchmarks --project-file="cabal.project" --dep -j${CABAL_THREADS:-4} all
+          cabal new-build --enable-tests  --enable-benchmarks  --project-file="cabal.project" --dep -j${CABAL_THREADS:-4} all
+
+    - save_cache:
+        key:    cabal--{{ checksum "ghc.version" }}--{{ .Environment.CACHE_VERSION }}--{{ checksum "projects.summary" }}--
+        paths:  [~/.cabal/packages, ~/.cabal/store]
+
+    - run:
+        name: Building project
+        command: |
+          cabal new-build --enable-tests --enable-benchmarks --project-file="cabal.project" -j${CABAL_THREADS:-4} all
+
+    - save_cache:
+        key:    cabal--{{ checksum "ghc.version" }}--{{ .Environment.CACHE_VERSION }}--{{ checksum "projects.summary" }}--extra
+        paths:  [~/.cabal/packages, ~/.cabal/store]
+
+    - run:
+        name: Running tests
+        command: |
+          cabal new-test --project-file="cabal.project" -j${CABAL_THREADS:-4} all
+
 version: 2.0
 jobs:
-  lts-10:
+  ghc-8.4.3:
     environment:
-      - LTS: "lts-10"
-    <<: *defaults
+      - GHC: "ghc8.4.3"
+    docker:
+      - image: quay.io/haskell_works/ghc-8.4.3
+    <<: *cabalbuild
 
-  lts-11:
+  ghc-8.2.2:
     environment:
-      - LTS: "lts-11"
-    <<: *defaults
+      - GHC: "ghc8.2.2"
+    docker:
+      - image: quay.io/haskell_works/ghc-8.2.2
+    <<: *cabalbuild
 
   lts-12:
     environment:
       - LTS: "lts-12"
-    <<: *defaults
-
-  nightly:
-    environment:
-      - LTS: "nightly"
     <<: *defaults
 
   release:
@@ -112,22 +172,12 @@ workflows:
   version: 2
   multiple-ghcs:
     jobs:
-      - lts-10
+      - ghc-8.4.3
+      - ghc-8.2.2
       - lts-12
-      - lts-11:
-          requires:
-            - lts-10
-            - lts-12
-      - nightly:
-          requires:
-            - lts-10
-            - lts-12
       - release:
           requires:
             - lts-12
-            - lts-11
-            - lts-10
-            - nightly
           filters:
             branches:
               only: master
