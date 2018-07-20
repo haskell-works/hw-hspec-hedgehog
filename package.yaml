@@ -2,7 +2,7 @@ name: hw-hspec-hedgehog
 version: '0.1.0.6'
 synopsis: Interoperability between hspec and hedgehog
 description: Interoperability between hspec and hedgehog.
-category: Web
+category: Test
 author: John Ky
 maintainer: newhoggy@gmail.com
 copyright: 2017 John Ky
