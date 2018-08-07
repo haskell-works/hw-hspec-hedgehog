@@ -1,14 +1,14 @@
--- This file has been generated from package.yaml by hpack version 0.27.0.
+-- This file has been generated from package.yaml by hpack version 0.28.2.
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: 204f0806fe3f171c4b704f11adbb38ab0c387412da7606c92228872fddb87cae
+-- hash: 8a9d8113183b238e80b4767e7fbcac11d4bb96a3a6e4f8290760e2a2b572fe90
 
 name:           hw-hspec-hedgehog
-version:        0.1.0.4
+version:        0.1.0.6
 synopsis:       Interoperability between hspec and hedgehog
 description:    Interoperability between hspec and hedgehog.
-category:       Web
+category:       Test
 homepage:       https://github.com/haskell-works/hw-hspec-hedgehog#readme
 bug-reports:    https://github.com/haskell-works/hw-hspec-hedgehog/issues
 author:         John Ky
@@ -19,7 +19,6 @@ license-file:   LICENSE
 tested-with:    GHC == 8.4.2, GHC == 8.2.2, GHC == 8.0.2, GHC == 7.10.3
 build-type:     Simple
 cabal-version:  >= 1.10
-
 extra-source-files:
     README.md
 
