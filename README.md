@@ -1,2 +1,2 @@
-# hw-hunit-hedgehog
+# hw-hspec-hedgehog
 
