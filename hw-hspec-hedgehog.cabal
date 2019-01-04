@@ -1,9 +1,3 @@
--- This file has been generated from package.yaml by hpack version 0.28.2.
---
--- see: https://github.com/sol/hpack
---
--- hash: 8a9d8113183b238e80b4767e7fbcac11d4bb96a3a6e4f8290760e2a2b572fe90
-
 name:           hw-hspec-hedgehog
 version:        0.1.0.6
 synopsis:       Interoperability between hspec and hedgehog
