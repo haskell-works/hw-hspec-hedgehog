@@ -41,6 +41,7 @@ library
           , transformers
   exposed-modules:  HaskellWorks.Hspec.Hedgehog
   other-modules:    Paths_hw_hspec_hedgehog
+  autogen-modules:  Paths_hw_hspec_hedgehog
   hs-source-dirs:   src
 
 test-suite hw-hspec-hedgehog-test
