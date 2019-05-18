@@ -1,3 +1,0 @@
-#!/usr/bin/env bash
-
-cat $(ls *.cabal | head -n 1) | grep '^name:' | head -n 1 | cut -d : -f 2 | xargs

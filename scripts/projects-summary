@@ -1,3 +1,0 @@
-#!/usr/bin/env bash
-
-find . -name "$(ls *.cabal | head -n 1)" -o -name "*.cabal" | grep -v '.stack-work/' | sort | xargs grep '^' | grep -v ':version:'
