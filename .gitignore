@@ -25,3 +25,4 @@ cabal.sandbox.config
 /*.json.bp
 
 /.ghc.environment.*
+/cabal.project.local
