@@ -1,0 +1,10 @@
+name: Main workflow
+on: [push]
+jobs:
+  Ubuntu:
+    name: Run Ubuntu
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout
+      uses: actions/checkout@master
+
