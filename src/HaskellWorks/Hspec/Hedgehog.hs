@@ -26,8 +26,8 @@ require p = do
   unless result $
     E.throwIO (HUnitFailure location $ Reason "Hedgehog property test failed")
 
-requireProperty :: PropertyT IO () -> Assertion
+requireProperty :: HasCallStack => PropertyT IO () -> Assertion
 requireProperty = require . property
 
-requireTest :: PropertyT IO () -> Assertion
+requireTest :: HasCallStack => PropertyT IO () -> Assertion
 requireTest = require . withTests 1 . property
