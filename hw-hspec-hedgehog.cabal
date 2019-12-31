@@ -57,7 +57,6 @@ test-suite hw-hspec-hedgehog-test
   type:                 exitcode-stdio-1.0
   main-is:              Spec.hs
   other-modules:        HaskellWorks.Hspec.HedgehogSpec
-                        Paths_hw_hspec_hedgehog
   hs-source-dirs:       test
   ghc-options:          -threaded -rtsopts -with-rtsopts=-N
   build-depends:        hw-hspec-hedgehog
