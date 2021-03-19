@@ -27,7 +27,7 @@ common doctest-discover           { build-depends: doctest-discover           >=
 common hedgehog                   { build-depends: hedgehog                   >= 0.5        && < 1.1    }
 common hspec                      { build-depends: hspec                      >= 2.6        && < 2.8    }
 common HUnit                      { build-depends: HUnit                      >= 1.5        && < 1.7    }
-common call-stack                 { build-depends: call-stack                 >= 0.2        && < 0.3    }
+common call-stack                 { build-depends: call-stack                 >= 0.2        && < 0.4    }
 common transformers               { build-depends: transformers               >= 0.4        && < 0.6    }
 
 common config
