@@ -12,7 +12,7 @@ maintainer:             newhoggy@gmail.com
 copyright:              2017-2021 John Ky
 license:                BSD-3-Clause
 license-file:           LICENSE
-tested-with:            GHC == 9.0.1, GHC == 8.10.7, GHC == 8.8.4, GHC == 8.6.5
+tested-with:            GHC == 9.2.2, GHC == 9.0.2, GHC == 8.10.7, GHC == 8.8.4, GHC == 8.6.5
 build-type:             Simple
 extra-source-files:     README.md
 
@@ -22,10 +22,10 @@ source-repository head
 
 common base                       { build-depends: base                       >= 4.11       && < 5      }
 
-common doctest                    { build-depends: doctest                    >= 0.16.2     && < 0.19   }
+common doctest                    { build-depends: doctest                    >= 0.16.2     && < 0.21   }
 common doctest-discover           { build-depends: doctest-discover           >= 0.2        && < 0.3    }
-common hedgehog                   { build-depends: hedgehog                   >= 0.5        && < 1.1    }
-common hspec                      { build-depends: hspec                      >= 2.6        && < 2.8    }
+common hedgehog                   { build-depends: hedgehog                   >= 0.5        && < 1.2    }
+common hspec                      { build-depends: hspec                      >= 2.6        && < 2.10   }
 common HUnit                      { build-depends: HUnit                      >= 1.5        && < 1.7    }
 common call-stack                 { build-depends: call-stack                 >= 0.2        && < 0.5    }
 common transformers               { build-depends: transformers               >= 0.5.6.2    && < 0.7    }
