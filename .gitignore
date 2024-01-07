@@ -15,6 +15,7 @@ cabal.sandbox.config
 *.aux
 *.hp
 
+/.vscode
 /*.cabal
 /*.submodules
 /.stack-work/
